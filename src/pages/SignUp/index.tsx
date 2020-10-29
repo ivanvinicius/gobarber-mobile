@@ -6,12 +6,16 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/mobile';
+import * as Yup from 'yup';
 
+import api from '../../services/api';
+import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
@@ -30,9 +34,40 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback((data: ISignUpFormData) => {
-    console.log(data);
-  }, []);
+  const handleSignUp = useCallback(
+    async ({ name, email, password }: ISignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string()
+            .email('E-mail precisa ser válido')
+            .required('E-mail obrigatório'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+        });
+
+        await schema.validate({ name, email, password }, { abortEarly: false });
+
+        await api.post('/users', { name, email, password });
+
+        Alert.alert('Cadastro realizado!', 'Faça o logon na aplicação');
+
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const formattedErrors = getValidationErrors(err);
+
+          formRef.current?.setErrors(formattedErrors);
+
+          return;
+        }
+
+        Alert.alert('Ocorreu um erro no cadastro', 'Tente novamente');
+      }
+    },
+    [navigation],
+  );
 
   return (
     <>
