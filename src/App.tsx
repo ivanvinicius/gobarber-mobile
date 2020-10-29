@@ -3,7 +3,7 @@ import React from 'react';
 import { View, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
-import AuthRoutes from './routes';
+import Routes from './routes';
 import AppProvider from './hooks';
 
 const App: React.FC = () => {
@@ -12,7 +12,7 @@ const App: React.FC = () => {
       <StatusBar barStyle="light-content" backgroundColor="#312e38" />
       <AppProvider>
         <View style={{ backgroundColor: '#312e38', flex: 1 }}>
-          <AuthRoutes />
+          <Routes />
         </View>
       </AppProvider>
     </NavigationContainer>
