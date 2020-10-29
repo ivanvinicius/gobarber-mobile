@@ -14,7 +14,7 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/mobile';
 import * as Yup from 'yup';
 
-// import api from '../../services/api'
+import { useAuth } from '../../hooks/Auth';
 import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -38,6 +38,7 @@ const SignIn: React.FC = () => {
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
+  const { signIn } = useAuth();
 
   const handleSignIn = useCallback(
     async ({ email, password }: ISignInFormData) => {
@@ -53,7 +54,7 @@ const SignIn: React.FC = () => {
 
         await schema.validate({ email, password }, { abortEarly: false });
 
-        // await api.post('/sessions', { email, password });
+        await signIn({ email, password });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const formattedErrors = getValidationErrors(err);
@@ -66,7 +67,7 @@ const SignIn: React.FC = () => {
         Alert.alert('Erro na autenticação', 'Cheque suas credenciais');
       }
     },
-    [],
+    [signIn],
   );
 
   return (
@@ -85,11 +86,7 @@ const SignIn: React.FC = () => {
             <View>
               <Title>Faça seu logon</Title>
             </View>
-            <Form
-              onSubmit={handleSignIn}
-              ref={formRef}
-              style={{ width: '100%' }}
-            >
+            <Form onSubmit={handleSignIn} ref={formRef}>
               <Input
                 name="email"
                 icon="mail"
