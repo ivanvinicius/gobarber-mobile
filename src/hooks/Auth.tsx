@@ -21,8 +21,15 @@ interface IUserData {
   password: string;
 }
 
+interface IUserProps {
+  id: string;
+  email: string;
+  name: string;
+  avatar_url: string;
+}
+
 interface IAuthContext {
-  user: object;
+  user: IUserProps;
   signIn(userData: IUserData): Promise<void>;
   signOut(): void;
   loading: boolean;
