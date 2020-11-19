@@ -85,7 +85,11 @@ const SignUp: React.FC = () => {
             <View>
               <Title>Crie sua conta</Title>
             </View>
-            <Form ref={formRef} onSubmit={handleSignUp}>
+            <Form
+              initialData={{ password: '123123' }}
+              ref={formRef}
+              onSubmit={handleSignUp}
+            >
               <Input
                 name="name"
                 icon="user"
