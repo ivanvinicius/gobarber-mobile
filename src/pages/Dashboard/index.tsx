@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
 
   const navigateToCreateAppointment = useCallback(
     (providerId: string) => {
-      navigate('CreateAppointment', { providerId });
+      navigate('CreateAppointment', { id: providerId });
     },
     [navigate],
   );
