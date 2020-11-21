@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Platform } from 'react-native';
+import { Platform, Text } from 'react-native';
+import { format } from 'date-fns';
 
 import api from '../../services/api';
 import { useAuth } from '../../hooks/Auth';
@@ -50,6 +51,26 @@ const CreateAppointment: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dayAvailability, setDayAvailability] = useState<IDayAvailabilityProps[]>([]); //eslint-disable-line
+
+  const morningAvailability = useMemo(() => {
+    return dayAvailability
+      .filter(({ hour }) => hour < 12)
+      .map(({ available, hour }) => ({
+        hour,
+        available,
+        formattedHour: format(new Date().setHours(hour), 'HH:00'),
+      }));
+  }, [dayAvailability]);
+
+  const afternoonAvailability = useMemo(() => {
+    return dayAvailability
+      .filter(({ hour }) => hour >= 12)
+      .map(({ available, hour }) => ({
+        hour,
+        available,
+        formattedHour: format(new Date().setHours(hour), 'HH:00'),
+      }));
+  }, [dayAvailability]);
 
   const navigateToDashboard = useCallback(() => {
     navigate.goBack();
@@ -138,6 +159,20 @@ const CreateAppointment: React.FC = () => {
           />
         )}
       </Calendar>
+
+      {morningAvailability.map(({ formattedHour, available }) => (
+        <Text>
+          {formattedHour}
+          {String(available)}
+        </Text>
+      ))}
+      <Text>-----------------------</Text>
+      {afternoonAvailability.map(({ formattedHour, available }) => (
+        <Text>
+          {formattedHour}
+          {String(available)}
+        </Text>
+      ))}
     </Container>
   );
 };
