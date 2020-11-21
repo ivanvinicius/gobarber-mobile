@@ -35,6 +35,11 @@ export interface IProvidersProps {
   avatar_url: string;
 }
 
+interface IDayAvailabilityProps {
+  hour: number;
+  available: boolean;
+}
+
 const CreateAppointment: React.FC = () => {
   const route = useRoute();
   const navigate = useNavigation();
@@ -44,6 +49,7 @@ const CreateAppointment: React.FC = () => {
   const [selectedProvider, setSelectedProvider] = useState(id);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dayAvailability, setDayAvailability] = useState<IDayAvailabilityProps[]>([]); //eslint-disable-line
 
   const navigateToDashboard = useCallback(() => {
     navigate.goBack();
@@ -69,6 +75,18 @@ const CreateAppointment: React.FC = () => {
   useEffect(() => {
     api.get('providers').then(response => setProviders(response.data));
   }, []);
+
+  useEffect(() => {
+    api
+      .get(`providers/${selectedProvider}/day-availability`, {
+        params: {
+          year: selectedDate.getFullYear(),
+          month: selectedDate.getMonth() + 1,
+          day: selectedDate.getDate(),
+        },
+      })
+      .then(response => setDayAvailability(response.data));
+  }, [selectedDate, selectedProvider]);
 
   return (
     <Container>
