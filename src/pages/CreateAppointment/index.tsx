@@ -111,7 +111,7 @@ const CreateAppointment: React.FC = () => {
     try {
       const date = new Date(selectedDate);
 
-      date.setHours(selectedHour + 1);
+      date.setHours(selectedHour + 1); // api should treat this information
       date.setMinutes(0);
 
       await api.post('/appointments', {
